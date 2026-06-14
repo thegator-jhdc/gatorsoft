@@ -5,17 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gatorsoft</title>
   <style>
+    :root {
+      --bg: #0e0e0e;
+      --toggle-border: rgba(255,255,255,0.4);
+      --toggle-color: rgba(255,255,255,0.8);
+    }
+    html[data-theme="light"] {
+      --bg: #f5f5f5;
+      --toggle-border: rgba(0,0,0,0.3);
+      --toggle-color: rgba(0,0,0,0.7);
+    }
     html, body { height: 100%; margin: 0; }
     body {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #0e0e0e;
+      background: var(--bg);
+      transition: background 0.3s ease;
     }
     img { max-width: 80%; max-height: 70vh; height: auto; }
+    #toggle {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px solid var(--toggle-border);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--toggle-color);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
   </style>
 </head>
 <body>
-  <img src="logo.png" alt="Gatorsoft">
+  <button id="toggle" aria-label="Toggle light and dark mode">🌙</button>
+  <img id="logo" src="logo_dark.png" alt="Gatorsoft">
+
+  <script>
+    const root = document.documentElement;
+    const logo = document.getElementById('logo');
+    const toggle = document.getElementById('toggle');
+
+    function apply(theme) {
+      root.setAttribute('data-theme', theme);
+      logo.src = theme === 'light' ? 'logo_light.png' : 'logo_dark.png';
+      toggle.textContent = theme === 'light' ? '☀️' : '🌙';
+    }
+
+    // Start from saved choice, else system preference
+    const saved = localStorage.getItem('theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    apply(saved || (prefersLight ? 'light' : 'dark'));
+
+    toggle.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      apply(next);
+      localStorage.setItem('theme', next);
+    });
+  </script>
 </body>
 </html>
